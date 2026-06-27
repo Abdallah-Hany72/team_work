@@ -50,9 +50,9 @@ export default function AdminUsersPage() {
         placeholder="Find a platform user by name or email..."
         onSearch={setSearchQuery}
       />
-      <div className="p-8 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex gap-2">
+      <div className="p-4 sm:p-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-2">
             {TABS.map((tab) => (
               <button
                 key={tab}

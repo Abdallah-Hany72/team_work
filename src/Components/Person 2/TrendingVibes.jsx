@@ -41,7 +41,7 @@ const TrendingVibes = ({ onVibeSelect = () => {} }) => {
     };
   });
   return (
-    <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg -mt-20 relative z-20">
+    <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg -mt-10 sm:-mt-20 relative z-20">
       <SectionHeader
         category="Curation"
         title="Trending Vibes"

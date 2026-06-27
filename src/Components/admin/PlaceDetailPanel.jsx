@@ -41,8 +41,8 @@ export default function PlaceDetailPanel({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        <div className="col-span-2 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-4">
           <div>
             <span className="text-xs font-semibold text-primary uppercase tracking-wider">Venue Description</span>
             <p className="text-sm text-on-surface-variant mt-1 leading-relaxed">"{place.description}"</p>

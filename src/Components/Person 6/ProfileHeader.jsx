@@ -22,7 +22,7 @@ const ProfileHeader = ({
       </div>
       
       {/* Profile Info Overlay Row */}
-      <div className="relative z-10 flex flex-col md:flex-row items-end gap-stack-lg px-4 md:px-stack-lg">
+      <div className="relative z-10 flex flex-col md:flex-row items-center md:items-end gap-stack-lg px-4 md:px-stack-lg">
         {/* Avatar */}
         <div className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-surface overflow-hidden shadow-2xl shrink-0">
           <img

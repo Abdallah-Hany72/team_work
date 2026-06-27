@@ -175,8 +175,8 @@ export default function EditProfilePage() {
               </div>
 
               {/* Avatar position overlap */}
-              <div className="px-6 pb-6 relative pt-12">
-                <div className="absolute -top-16 left-6 w-28 h-28 rounded-full border-4 border-white/90 overflow-hidden shadow-lg bg-surface-container relative group">
+              <div className="px-6 pb-6 relative pt-4">
+                <div className="w-28 h-28 rounded-full border-4 border-surface overflow-hidden shadow-lg bg-surface-container relative group -mt-20 mb-4 ml-1">
                   <img
                     src={avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200"}
                     alt="User Avatar"

@@ -3,7 +3,7 @@ import AdminSidebar from "./AdminSidebar";
 
 export default function AdminLayout({ children }) {
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex flex-col md:flex-row bg-background">
       <AdminSidebar />
       <div className="flex-1 min-w-0">{children}</div>
     </div>

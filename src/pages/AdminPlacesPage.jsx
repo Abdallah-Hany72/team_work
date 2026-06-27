@@ -74,7 +74,7 @@ export default function AdminPlacesPage() {
           </div>
         </div>
       ) : (
-        <div className="p-8 grid grid-cols-3 gap-6">
+        <div className="p-4 sm:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="space-y-3">
             {visiblePlaces.length === 0 ? (
               <p className="text-sm text-on-surface-variant px-1">
@@ -91,7 +91,7 @@ export default function AdminPlacesPage() {
               ))
             )}
           </div>
-          <div className="col-span-2">
+          <div className="lg:col-span-2">
             <PlaceDetailPanel
               place={selected}
               onApprove={handleApprove}

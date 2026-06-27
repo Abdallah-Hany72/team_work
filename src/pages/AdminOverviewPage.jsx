@@ -62,8 +62,8 @@ export default function AdminOverviewPage() {
         placeholder="Check reports or user activity..."
         onSearch={setSearchQuery}
       />
-      <div className="p-8 space-y-8">
-        <div className="grid grid-cols-4 gap-4">
+      <div className="p-4 sm:p-8 space-y-6 sm:space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             icon={ClipboardList}
             label="Pending Places"
@@ -90,8 +90,8 @@ export default function AdminOverviewPage() {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2 bg-surface-container rounded-2xl border border-outline-variant/20 p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-surface-container rounded-2xl border border-outline-variant/20 p-4 sm:p-6 overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="font-bold text-on-surface">Review Queue</h2>
@@ -113,71 +113,73 @@ export default function AdminOverviewPage() {
                   : "No submissions match your search."}
               </div>
             ) : (
-              <table className="w-full text-sm">
-                <thead className="text-xs text-on-surface-variant uppercase">
-                  <tr>
-                    <th className="text-left pb-2 font-semibold">Venue / User</th>
-                    <th className="text-left pb-2 font-semibold">
-                      Submission Date
-                    </th>
-                    <th className="text-left pb-2 font-semibold">Flags</th>
-                    <th className="text-right pb-2 font-semibold">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleQueue.map((row) => (
-                    <tr
-                      key={row.id}
-                      className="border-t border-outline-variant/10"
-                    >
-                      <td className="py-3">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={row.image}
-                            alt={row.venue}
-                            className="w-10 h-10 rounded-lg object-cover"
-                          />
-                          <div>
-                            <p className="font-semibold text-on-surface">
-                              {row.venue}
-                            </p>
-                            <p className="text-xs text-on-surface-variant">
-                              by {row.user}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-3 text-on-surface-variant">{row.date}</td>
-                      <td className="py-3">
-                        <TagBadge
-                          variant={row.flag === "CLEAR" ? "success" : "warning"}
-                          size="sm"
-                        >
-                          {row.flag}
-                        </TagBadge>
-                      </td>
-                      <td className="py-3 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => resolveRow(row.id, true)}
-                            title="Approve"
-                            className="p-1.5 rounded-full text-green-600 hover:bg-green-50 cursor-pointer"
-                          >
-                            <Check size={16} />
-                          </button>
-                          <button
-                            onClick={() => resolveRow(row.id, false)}
-                            title="Reject"
-                            className="p-1.5 rounded-full text-red-500 hover:bg-red-50 cursor-pointer"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                      </td>
+              <div className="overflow-x-auto w-full">
+                <table className="w-full text-sm min-w-[500px]">
+                  <thead className="text-xs text-on-surface-variant uppercase">
+                    <tr>
+                      <th className="text-left pb-2 font-semibold">Venue / User</th>
+                      <th className="text-left pb-2 font-semibold">
+                        Submission Date
+                      </th>
+                      <th className="text-left pb-2 font-semibold">Flags</th>
+                      <th className="text-right pb-2 font-semibold">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {visibleQueue.map((row) => (
+                      <tr
+                        key={row.id}
+                        className="border-t border-outline-variant/10"
+                      >
+                        <td className="py-3">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={row.image}
+                              alt={row.venue}
+                              className="w-10 h-10 rounded-lg object-cover"
+                            />
+                            <div>
+                              <p className="font-semibold text-on-surface">
+                                {row.venue}
+                              </p>
+                              <p className="text-xs text-on-surface-variant">
+                                by {row.user}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 text-on-surface-variant">{row.date}</td>
+                        <td className="py-3">
+                          <TagBadge
+                            variant={row.flag === "CLEAR" ? "success" : "warning"}
+                            size="sm"
+                          >
+                            {row.flag}
+                          </TagBadge>
+                        </td>
+                        <td className="py-3 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => resolveRow(row.id, true)}
+                              title="Approve"
+                              className="p-1.5 rounded-full text-green-600 hover:bg-green-50 cursor-pointer"
+                            >
+                              <Check size={16} />
+                            </button>
+                            <button
+                              onClick={() => resolveRow(row.id, false)}
+                              title="Reject"
+                              className="p-1.5 rounded-full text-red-500 hover:bg-red-50 cursor-pointer"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
 
@@ -217,8 +219,8 @@ export default function AdminOverviewPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="bg-surface-container rounded-2xl border border-outline-variant/20 p-6 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-surface-container rounded-2xl border border-outline-variant/20 p-4 sm:p-6 space-y-4">
             <h2 className="font-bold text-on-surface">Regional Growth</h2>
             {MOCK_REGIONAL_GROWTH.map((region) => (
               <div key={region.city} className="space-y-1">
