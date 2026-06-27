@@ -1,6 +1,6 @@
 // src/pages/PlaceDetails.jsx
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../Components/shared/Navbar";
 import SpotGallery from "../Components/Person 4/SpotGallery";
 import SpotInfo from "../Components/Person 4/SpotInfo";
@@ -9,14 +9,30 @@ import ReservationSection from "../Components/Person 4/ReservationSection";
 import CommunityReviews from "../Components/Person 4/CommunityReviews";
 import SimilarCurations from "../Components/Person 4/SimilarCurations";
 import Footer from "../Components/Ui/Footer/Footer";
-import { MOCK_SPOTS } from "../data/mockData";
+import { useAuth } from "../Components/auth/AuthContext";
+import AddToCollectionModal from "../Components/Ui/AddToCollectionModal";
+import EditSpotModal from "../Components/Ui/EditSpotModal";
 
 export default function PlaceDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isSpotSaved, toggleSaveSpot, spots, user } = useAuth();
+  
+  const [isOrganizeOpen, setIsOrganizeOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
-  // Find the requested spot, fallback to Spot 1 (The Glass Pavilion) for a high-fidelity demonstration
-  const spot =
-    MOCK_SPOTS.find((s) => s.id === Number(id)) || MOCK_SPOTS[0];
+  const spot = spots.find((s) => s.id === Number(id));
+
+  // Redirect if deleted
+  useEffect(() => {
+    if (!spot) {
+      navigate("/discover", { replace: true });
+    }
+  }, [spot, navigate]);
+
+  if (!spot) return null;
+
+  const isAdmin = user && user.role === "admin";
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -24,7 +40,7 @@ export default function PlaceDetails() {
   };
 
   const handleSave = () => {
-
+    toggleSaveSpot(spot.id);
   };
 
   return (
@@ -50,6 +66,10 @@ export default function PlaceDetails() {
                 vibeTags={spot.vibeTags}
                 onShare={handleShare}
                 onSave={handleSave}
+                onOrganize={() => setIsOrganizeOpen(true)}
+                saved={isSpotSaved(spot.id)}
+                isAdmin={isAdmin}
+                onEdit={() => setIsEditOpen(true)}
               />
 
               <hr className="border-outline-variant/20" />
@@ -75,6 +95,18 @@ export default function PlaceDetails() {
           </div>
         </main>
       </div>
+
+      <AddToCollectionModal 
+        isOpen={isOrganizeOpen} 
+        onClose={() => setIsOrganizeOpen(false)} 
+        spot={spot} 
+      />
+
+      <EditSpotModal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        spot={spot}
+      />
 
       <Footer />
     </div>

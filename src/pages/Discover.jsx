@@ -6,9 +6,10 @@ import FiltersSidebar from "../Components/discover/FiltersSideBar";
 import SortDropdown from "../Components/discover/SortDropdown";
 import SpotList from "../Components/discover/SpotList";
 import Footer from "../Components/Ui/Footer/Footer";
-import { MOCK_SPOTS } from "../data/mockData";
+import { useAuth } from "../Components/auth/AuthContext";
 
 export default function Discover() {
+  const { spots } = useAuth();
   const [searchParams] = useSearchParams();
   const searchQ = searchParams.get("q") || "";
   const vibeQ = searchParams.get("vibe") || "";
@@ -22,7 +23,7 @@ export default function Discover() {
   // Get all unique moods from database
   const allMoods = [
   ...new Set(
-    MOCK_SPOTS.flatMap((spot) => spot.tags || [])
+    spots.flatMap((spot) => spot.tags || [])
   ),
 ];
 
@@ -30,7 +31,7 @@ export default function Discover() {
   const [sortBy, setSortBy] = useState("Rating");
 
   // Results State
-  const [displayedSpots, setDisplayedSpots] = useState(MOCK_SPOTS);
+  const [displayedSpots, setDisplayedSpots] = useState(spots);
 
   // Determine if any filters are active
   const hasActiveSearch =
@@ -49,7 +50,7 @@ export default function Discover() {
 
   // Apply filters function
   const applyFilters = () => {
-    let result = [...MOCK_SPOTS];
+    let result = [...spots];
 
     // Filter by Search Query
     if (searchQ) {
@@ -92,10 +93,27 @@ export default function Discover() {
     setDisplayedSpots(result);
   };
 
+  // Pagination states
+  const [visibleCount, setVisibleCount] = useState(6);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
   // Run on mount, search param change, or sort change
   useEffect(() => {
     applyFilters();
-  }, [searchQ, sortBy, filters]);
+    setVisibleCount(6); // Reset pagination when search or filters change
+  }, [searchQ, sortBy, filters, spots]);
+
+  const handleLoadMore = () => {
+    if (isLoadingMore) return;
+    setIsLoadingMore(true);
+    setTimeout(() => {
+      setVisibleCount((prev) => prev + 6);
+      setIsLoadingMore(false);
+    }, 1200); // 1.2s delay for visual feedback of loading skeletons
+  };
+
+  const spotsToRender = displayedSpots.slice(0, visibleCount);
+  const hasMore = displayedSpots.length > visibleCount;
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col justify-between">
@@ -135,7 +153,12 @@ export default function Discover() {
               </div>
 
               {/* Spot Grid */}
-              <SpotList spots={displayedSpots} />
+              <SpotList 
+                spots={spotsToRender} 
+                onLoadMore={handleLoadMore} 
+                hasMore={hasMore} 
+                isLoading={isLoadingMore}
+              />
             </div>
           </div>
         </main>

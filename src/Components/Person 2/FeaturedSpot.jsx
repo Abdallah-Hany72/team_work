@@ -3,20 +3,25 @@ import { useNavigate } from "react-router-dom";
 import SectionHeader from "../shared/SectionHeader";
 import TagBadge from "../shared/TagBadge";
 import SmartMatchingBanner from "./SmartMatchingBanner";
-import { MOCK_SPOTS } from "../../data/mockData";
+import { useAuth } from "../auth/AuthContext";
 
 const FeaturedSpot = () => {
   const navigate = useNavigate();
+  const { spots } = useAuth();
+
+  const currentSpots = spots || [];
 
   // Highest rated spot
-  const mainSpot = [...MOCK_SPOTS].sort(
-    (a, b) => b.rating - a.rating
-  )[0];
+  const mainSpot = currentSpots.length > 0 
+    ? [...currentSpots].sort((a, b) => b.rating - a.rating)[0] 
+    : null;
 
   // Two different spots for side cards
-  const sideSpots = MOCK_SPOTS
-    .filter((spot) => spot.id !== mainSpot.id)
-    .slice(0, 2);
+  const sideSpots = mainSpot
+    ? currentSpots.filter((spot) => spot.id !== mainSpot.id).slice(0, 2)
+    : [];
+
+  if (!mainSpot) return null;
 
   return (
     <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">

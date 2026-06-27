@@ -1,8 +1,8 @@
 
 import TagBadge from '../shared/TagBadge';
-import React, { useState } from "react";
-
+import React from "react";
 import { Bookmark } from "lucide-react";
+
 const SpotInfo = ({
   title,
   rating,
@@ -13,8 +13,11 @@ const SpotInfo = ({
   vibeTags = [],
   onShare = () => { },
   onSave = () => { },
+  onOrganize = () => { },
+  saved = false,
+  isAdmin = false,
+  onEdit = () => { },
 }) => {
-const [saved, setSaved] = useState(false);
   return (  
     <div>
       {/* Title Header and Actions Row */}
@@ -37,7 +40,17 @@ const [saved, setSaved] = useState(false);
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
+          {isAdmin && (
+            <button
+              onClick={onEdit}
+              className="flex items-center gap-2 bg-surface-container-high hover:bg-surface-container-highest transition-colors px-6 py-3 rounded-full font-label-md border border-primary/20 text-primary hover:bg-primary/5 transition-all cursor-pointer shadow-md"
+            >
+              <span className="material-symbols-outlined text-[18px]">edit</span>
+              Edit Spot
+            </button>
+          )}
+
           <button
             onClick={onShare}
             className="flex items-center gap-2 bg-surface-container-high hover:bg-surface-container-highest transition-colors px-6 py-3 rounded-full font-label-md sunlight-shadow scale-up active:scale-95 transition-all cursor-pointer"
@@ -45,20 +58,31 @@ const [saved, setSaved] = useState(false);
             <span className="material-symbols-outlined">share</span>
             Share
           </button>
-        <button
-  onClick={() => {
-    setSaved((prev) => !prev);
-    onSave();
-  }}
-  className="flex items-center gap-2 bg-primary hover:bg-primary-container text-on-primary px-8 py-3 rounded-full cursor-pointer"
->
-  <Bookmark
-    size={20}
-    className={saved ? "fill-current" : ""}
-  />
+          
+          {saved && (
+            <button
+              onClick={onOrganize}
+              className="flex items-center gap-2 bg-surface-container-high hover:bg-surface-container-highest transition-colors px-6 py-3 rounded-full font-label-md sunlight-shadow scale-up active:scale-95 transition-all cursor-pointer text-on-surface"
+            >
+              <span className="material-symbols-outlined text-primary">folder_open</span>
+              Organize
+            </button>
+          )}
 
-  {saved ? "Saved" : "Save to Collection"}
-</button>
+          <button
+            onClick={onSave}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full font-label-md scale-up active:scale-95 transition-all cursor-pointer ${
+              saved 
+                ? "bg-surface-container-low border border-primary/20 text-primary hover:bg-primary/5" 
+                : "bg-primary hover:bg-primary-container text-on-primary shadow-lg shadow-primary/10"
+            }`}
+          >
+            <Bookmark
+              size={18}
+              className={saved ? "fill-primary text-primary" : "text-on-primary"}
+            />
+            {saved ? "Saved" : "Save to Collection"}
+          </button>
         </div>
       </div>
 

@@ -2,13 +2,16 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { MOCK_SPOTS } from "../../data/mockData";
+import { useAuth } from "../auth/AuthContext";
 
 export default function SimilarCurations({ currentSpot }) {
   const navigate = useNavigate();
+  const { spots } = useAuth();
   if (!currentSpot) return null;
 
-  const similarSpots = MOCK_SPOTS.filter((spot) => {
+  const currentSpots = spots || [];
+
+  const similarSpots = currentSpots.filter((spot) => {
     if (spot.id === currentSpot.id) return false;
 
     const sameCategory =

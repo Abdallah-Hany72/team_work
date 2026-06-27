@@ -11,6 +11,9 @@ const cuisines = [
   "Tea & Spirits",
   "Japanese",
   "Italian",
+  "Egyptian",
+  "Seafood",
+  "International",
 ];
 
 export default function CuisineFilter({ value, onChange }) {

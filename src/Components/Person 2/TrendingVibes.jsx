@@ -1,30 +1,32 @@
 import React from 'react';
 import SectionHeader from '../shared/SectionHeader';
 import TagBadge from '../shared/TagBadge';
-import { MOCK_SPOTS } from "../../data/mockData";
+import { useAuth } from "../auth/AuthContext";
 
 const TrendingVibes = ({ onVibeSelect = () => {} }) => {
-const vibeCounts = {};
+  const { spots } = useAuth();
+  const currentSpots = spots || [];
+  const vibeCounts = {};
 
-MOCK_SPOTS.forEach((spot) => {
-  spot.tags?.forEach((tag) => {
-    vibeCounts[tag] = (vibeCounts[tag] || 0) + 1;
+  currentSpots.forEach((spot) => {
+    spot.tags?.forEach((tag) => {
+      vibeCounts[tag] = (vibeCounts[tag] || 0) + 1;
+    });
   });
-});
 
-const usedSpotIds = new Set();
+  const usedSpotIds = new Set();
 
-const vibes = Object.entries(vibeCounts)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, 3)
-  .map(([tag, count]) => {
-    const spot =
-      MOCK_SPOTS.find(
-        (s) =>
-          s.tags?.includes(tag) &&
-          !usedSpotIds.has(s.id)
-      ) ||
-      MOCK_SPOTS.find((s) => s.tags?.includes(tag));
+  const vibes = Object.entries(vibeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([tag, count]) => {
+      const spot =
+        currentSpots.find(
+          (s) =>
+            s.tags?.includes(tag) &&
+            !usedSpotIds.has(s.id)
+        ) ||
+        currentSpots.find((s) => s.tags?.includes(tag));
 
     if (spot) {
       usedSpotIds.add(spot.id);
