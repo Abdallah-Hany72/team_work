@@ -1,7 +1,10 @@
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminLayout from "../Components/admin/AdminLayout";
 import AdminTopbar from "../Components/admin/AdminTopbar";
 import StatCard from "../Components/admin/StatCard";
 import TagBadge from "../Components/Ui/TagBadge/TagBadge";
+import Toast, { useToast } from "../Components/admin/Toast";
 import {
   ClipboardList,
   ShieldAlert,
@@ -28,19 +31,43 @@ const activityColor = {
 };
 
 export default function AdminOverviewPage() {
+  const [queue, setQueue] = useState(MOCK_REVIEW_QUEUE_TABLE);
+  const [pendingPlaces, setPendingPlaces] = useState(148);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [toast, showToast] = useToast();
+
+  const visibleQueue = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return queue;
+    return queue.filter(
+      (row) =>
+        row.venue.toLowerCase().includes(q) || row.user.toLowerCase().includes(q)
+    );
+  }, [queue, searchQuery]);
+
+  const resolveRow = (id, approved) => {
+    const row = queue.find((r) => r.id === id);
+    setQueue((prev) => prev.filter((r) => r.id !== id));
+    setPendingPlaces((prev) => Math.max(0, prev - 1));
+    if (row) {
+      showToast(approved ? `"${row.venue}" approved.` : `"${row.venue}" rejected.`);
+    }
+  };
+
   return (
     <AdminLayout>
       <AdminTopbar
         title="Platform Overview"
         subtitle="Real-time control center for Spotly's social ecosystem."
         placeholder="Check reports or user activity..."
+        onSearch={setSearchQuery}
       />
       <div className="p-8 space-y-8">
         <div className="grid grid-cols-4 gap-4">
           <StatCard
             icon={ClipboardList}
             label="Pending Places"
-            value="148"
+            value={pendingPlaces.toLocaleString()}
             trend={12}
           />
           <StatCard
@@ -72,67 +99,86 @@ export default function AdminOverviewPage() {
                   Moderation required for new venue submissions.
                 </p>
               </div>
-              <button className="text-sm font-semibold text-primary hover:underline">
+              <Link
+                to="/admin/places"
+                className="text-sm font-semibold text-primary hover:underline"
+              >
                 View All Queue
-              </button>
+              </Link>
             </div>
-            <table className="w-full text-sm">
-              <thead className="text-xs text-on-surface-variant uppercase">
-                <tr>
-                  <th className="text-left pb-2 font-semibold">Venue / User</th>
-                  <th className="text-left pb-2 font-semibold">
-                    Submission Date
-                  </th>
-                  <th className="text-left pb-2 font-semibold">Flags</th>
-                  <th className="text-right pb-2 font-semibold">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {MOCK_REVIEW_QUEUE_TABLE.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="border-t border-outline-variant/10"
-                  >
-                    <td className="py-3">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={row.image}
-                          alt={row.venue}
-                          className="w-10 h-10 rounded-lg object-cover"
-                        />
-                        <div>
-                          <p className="font-semibold text-on-surface">
-                            {row.venue}
-                          </p>
-                          <p className="text-xs text-on-surface-variant">
-                            by {row.user}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 text-on-surface-variant">{row.date}</td>
-                    <td className="py-3">
-                      <TagBadge
-                        variant={row.flag === "CLEAR" ? "success" : "warning"}
-                        size="sm"
-                      >
-                        {row.flag}
-                      </TagBadge>
-                    </td>
-                    <td className="py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button className="p-1.5 rounded-full text-green-600 hover:bg-green-50">
-                          <Check size={16} />
-                        </button>
-                        <button className="p-1.5 rounded-full text-red-500 hover:bg-red-50">
-                          <X size={16} />
-                        </button>
-                      </div>
-                    </td>
+            {visibleQueue.length === 0 ? (
+              <div className="py-10 text-center text-sm text-on-surface-variant">
+                {queue.length === 0
+                  ? "Queue is clear — nothing waiting on review."
+                  : "No submissions match your search."}
+              </div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="text-xs text-on-surface-variant uppercase">
+                  <tr>
+                    <th className="text-left pb-2 font-semibold">Venue / User</th>
+                    <th className="text-left pb-2 font-semibold">
+                      Submission Date
+                    </th>
+                    <th className="text-left pb-2 font-semibold">Flags</th>
+                    <th className="text-right pb-2 font-semibold">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {visibleQueue.map((row) => (
+                    <tr
+                      key={row.id}
+                      className="border-t border-outline-variant/10"
+                    >
+                      <td className="py-3">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={row.image}
+                            alt={row.venue}
+                            className="w-10 h-10 rounded-lg object-cover"
+                          />
+                          <div>
+                            <p className="font-semibold text-on-surface">
+                              {row.venue}
+                            </p>
+                            <p className="text-xs text-on-surface-variant">
+                              by {row.user}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 text-on-surface-variant">{row.date}</td>
+                      <td className="py-3">
+                        <TagBadge
+                          variant={row.flag === "CLEAR" ? "success" : "warning"}
+                          size="sm"
+                        >
+                          {row.flag}
+                        </TagBadge>
+                      </td>
+                      <td className="py-3 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => resolveRow(row.id, true)}
+                            title="Approve"
+                            className="p-1.5 rounded-full text-green-600 hover:bg-green-50 cursor-pointer"
+                          >
+                            <Check size={16} />
+                          </button>
+                          <button
+                            onClick={() => resolveRow(row.id, false)}
+                            title="Reject"
+                            className="p-1.5 rounded-full text-red-500 hover:bg-red-50 cursor-pointer"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           <div className="bg-surface-container rounded-2xl border border-outline-variant/20 p-6 space-y-4">
@@ -162,9 +208,12 @@ export default function AdminOverviewPage() {
                 );
               })}
             </div>
-            <button className="w-full text-sm font-semibold text-primary border border-outline-variant rounded-xl py-2 hover:bg-surface-container-high transition-colors">
+            <Link
+              to="/admin/moderation"
+              className="w-full block text-center text-sm font-semibold text-primary border border-outline-variant rounded-xl py-2 hover:bg-surface-container-high transition-colors"
+            >
               See Detailed Logs
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -203,6 +252,7 @@ export default function AdminOverviewPage() {
           </div>
         </div>
       </div>
+      <Toast toast={toast} />
     </AdminLayout>
   );
 }

@@ -3,7 +3,20 @@ import { MapPin } from "lucide-react";
 import PrimaryButton from "../Ui/PrimaryButton/PrimaryButton";
 import TagBadge from "../Ui/TagBadge/TagBadge";
 
-export default function PlaceDetailPanel({ place, onApprove, onEdit, onReject }) {
+const checksList = [
+  { key: "locationVerified", label: "Physical Location Verified" },
+  { key: "contactAccurate", label: "Contact Info Accurate" },
+  { key: "photoRights", label: "Photo Rights Confirmed" },
+  { key: "communityStandards", label: "Community Standards Met" },
+];
+
+export default function PlaceDetailPanel({
+  place,
+  onApprove,
+  onEdit,
+  onReject,
+  onToggleCheck,
+}) {
   if (!place) {
     return (
       <div className="flex items-center justify-center h-full text-on-surface-variant text-sm">
@@ -12,12 +25,7 @@ export default function PlaceDetailPanel({ place, onApprove, onEdit, onReject })
     );
   }
 
-  const checksList = [
-    { key: "locationVerified", label: "Physical Location Verified" },
-    { key: "contactAccurate", label: "Contact Info Accurate" },
-    { key: "photoRights", label: "Photo Rights Confirmed" },
-    { key: "communityStandards", label: "Community Standards Met" },
-  ];
+  const allChecksComplete = checksList.every(({ key }) => place.checks[key]);
 
   return (
     <div className="space-y-6">
@@ -65,15 +73,35 @@ export default function PlaceDetailPanel({ place, onApprove, onEdit, onReject })
           <div className="space-y-2.5">
             {checksList.map(({ key, label }) => (
               <label key={key} className="flex items-center gap-2 text-sm text-on-surface cursor-pointer">
-                <input type="checkbox" defaultChecked={place.checks[key]} className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/40" />
+                <input
+                  type="checkbox"
+                  checked={!!place.checks[key]}
+                  onChange={() => onToggleCheck?.(place.id, key)}
+                  className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/40"
+                />
                 {label}
               </label>
             ))}
           </div>
 
-          <PrimaryButton className="w-full" icon="check" onClick={() => onApprove?.(place.id)}>
+          <PrimaryButton
+            className="w-full"
+            icon="check"
+            disabled={!allChecksComplete}
+            title={
+              allChecksComplete
+                ? undefined
+                : "Complete all verification checks before publishing"
+            }
+            onClick={() => allChecksComplete && onApprove?.(place.id)}
+          >
             Approve & Publish
           </PrimaryButton>
+          {!allChecksComplete && (
+            <p className="text-xs text-on-surface-variant text-center">
+              Complete all checks to enable publishing.
+            </p>
+          )}
           <div className="grid grid-cols-2 gap-2">
             <PrimaryButton variant="secondary" className="w-full" onClick={() => onEdit?.(place.id)}>Edit</PrimaryButton>
             <PrimaryButton variant="outline" className="w-full text-red-500 border-red-300 hover:bg-red-50" onClick={() => onReject?.(place.id)}>Reject</PrimaryButton>

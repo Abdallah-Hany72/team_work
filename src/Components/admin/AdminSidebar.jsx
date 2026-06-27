@@ -4,28 +4,39 @@ import {
   LayoutGrid,
   Users,
   MapPin,
-  MessageSquare,
-  BarChart3,
   ShieldCheck,
-  AlertCircle,
-  Settings,
 } from "lucide-react";
-
-const mainMenu = [
-  { label: "Overview", icon: LayoutGrid, to: "/admin" },
-  { label: "Users", icon: Users, to: "/admin/users" },
-  { label: "Places", icon: MapPin, to: "/admin/places" },
-];
-
-const moderationMenu = [
-  { label: "Content Monitoring", icon: ShieldCheck, to: "/admin/moderation" },
-
-];
+import { MOCK_PENDING_PLACES, MOCK_REVIEWS_QUEUE } from "../../data/mockData";
 
 export default function AdminSidebar({
   admin = { name: "Alex Rivera", role: "Super Admin", avatar: "" },
 }) {
   const { pathname } = useLocation();
+
+  const pendingPlacesCount = MOCK_PENDING_PLACES.length;
+  const flaggedReviewsCount = MOCK_REVIEWS_QUEUE.filter(
+    (r) => r.flagType !== "standard"
+  ).length;
+
+  const mainMenu = [
+    { label: "Overview", icon: LayoutGrid, to: "/admin" },
+    { label: "Users", icon: Users, to: "/admin/users" },
+    {
+      label: "Places",
+      icon: MapPin,
+      to: "/admin/places",
+      badge: pendingPlacesCount || null,
+    },
+  ];
+
+  const moderationMenu = [
+    {
+      label: "Content Monitoring",
+      icon: ShieldCheck,
+      to: "/admin/moderation",
+      badge: flaggedReviewsCount || null,
+    },
+  ];
 
   const renderItem = ({ label, icon: Icon, to, badge }) => {
     const active = pathname === to;
@@ -83,7 +94,6 @@ export default function AdminSidebar({
 
       {/* Footer */}
       <div className="px-4 py-4 border-t border-outline-variant/20 space-y-3">
-        
         <div className="flex items-center gap-3 px-3 py-2">
           <img
             src={admin.avatar || "https://i.pravatar.cc/40"}
